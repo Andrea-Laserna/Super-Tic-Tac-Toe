@@ -17,95 +17,150 @@ class _MainMenuState extends State<MainMenu> {
     return Scaffold(
       body: Container(
         width: double.infinity,
+        height: MediaQuery.of(context).size.height,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFF1a0b2e), Color(0xFF0d051a)],
+            colors: [Color(0xFF32316B), Color(0xFF0d051a)],
           ),
         ),
         child: SafeArea(
-          child: Column(
+          child: Stack(
             children: [
-              const SizedBox(height: 60),
-              // Logo Section
-              Stack(
-                alignment: Alignment.center,
+              // Galaxy image layer (middle)
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: Image.asset(
+                  'assets/galaxy.png',
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height * 0.8,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: Image.asset(
+                  'assets/grid.png',
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height * 0.3,
+                  fit: BoxFit.cover,
+                  opacity: const AlwaysStoppedAnimation(0.5),
+                ),
+              ),
+              // UI elements layer (top)
+              Column(
                 children: [
-                  Column(
+                  const SizedBox(height: 70),
+                  // Logo Text
+                  Stack(
                     children: [
+                      // Stroke (outline)
+                      Text(
+                        'SUPER',
+                        style: TextStyle(
+                          fontFamily: 'Daydream',
+                          fontSize: 38,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1,
+                          foreground: Paint()
+                            ..style = PaintingStyle.stroke
+                            ..strokeWidth = 8
+                            ..color = Color(0xFFE7C4FF),
+                        ),
+                      ),
+                      // Fill
                       const Text(
                         'SUPER',
                         style: TextStyle(
-                          fontSize: 48,
+                          fontFamily: 'Daydream',
+                          fontSize: 38,
                           fontWeight: FontWeight.w900,
-                          color: Color(0xFFb566ff),
-                          letterSpacing: 2,
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(40),
-                        ),
-                        child: const Text(
-                          'Tic Tac Toe',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1a0b2e),
-                          ),
+                          color: Color(0xFF7060AD),
+                          letterSpacing: 1,
                         ),
                       ),
                     ],
                   ),
-                ],
-              ),
-              const Spacer(),
-              // Inputs Section
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40),
-                child: Column(
-                  children: [
-                    _buildPlayerInput(_player1Controller, 'Enter Player 1', Icons.close, const Color(0xFFb566ff)),
-                    const SizedBox(height: 20),
-                    _buildPlayerInput(_player2Controller, 'Enter Player 2', Icons.circle_outlined, const Color(0xFFb566ff)),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 40),
-              // Start Button
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => GameScreen(
-                        player1: _player1Controller.text,
-                        player2: _player2Controller.text,
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(40),
+                    ),
+                    child: const Text(
+                      'Tic Tac Toe',
+                      style: TextStyle(
+                        fontFamily: 'Brady',
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF7060AD),
                       ),
                     ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFa682ff),
-                  padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
                   ),
-                ),
-                child: const Text(
-                  'START',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF1a0b2e),
+                  const Spacer(),
+                  // Inputs Section
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                    child: Column(
+                      children: [
+                        _buildPlayerInput(_player1Controller, 'Enter Player 1', Icons.close, const Color(0xFFEBA5F6)),
+                        const SizedBox(height: 20),
+                        _buildPlayerInput(_player2Controller, 'Enter Player 2', Icons.circle_outlined, const Color(0xFFb566ff)),
+                      ],
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 80),
-            ],
+                  const SizedBox(height: 40),
+                  // Start Button
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0xFFEBA5F6),
+                          offset: Offset(0, 4),
+                        )
+                      ]
+                    ),
+                    child:
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => GameScreen(
+                                  player1: _player1Controller.text,
+                                player2: _player2Controller.text,
+                              ),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFa682ff),
+                            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
+                          child: const Text(
+                            'START',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontFamily: 'Brady',
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFF32316B),
+                            ),
+                          ),
+                        ),
+                  ),
+                        const SizedBox(height: 120),
+                      ],
+                    ),
+              ],
           ),
         ),
       ),
@@ -121,7 +176,12 @@ class _MainMenuState extends State<MainMenu> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: TextField(
         controller: controller,
-        style: const TextStyle(color: Color(0xFF1a0b2e), fontWeight: FontWeight.bold),
+        style: const TextStyle(
+          color: Color(0xFF1a0b2e), 
+          fontWeight: FontWeight.bold,
+          fontFamily: 'Brady',
+          fontSize: 20,
+        ),
         decoration: InputDecoration(
           border: InputBorder.none,
           hintText: hint,
