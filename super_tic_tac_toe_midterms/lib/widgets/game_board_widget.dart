@@ -24,7 +24,7 @@ class GameBoardWidget extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: const Color(0xFFb566ff).withOpacity(0.2),
+            color: const Color(0xFFb566ff).withOpacity(0.38),
             borderRadius: BorderRadius.circular(15),
           ),
           child: GridView.builder(

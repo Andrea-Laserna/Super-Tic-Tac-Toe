@@ -21,6 +21,8 @@ class _GameScreenState extends State<GameScreen> {
   int? activeSubGrid; // null means any sub-grid is active
   bool showTurnPopup = false;
   String? mainWinner;
+  int player1Wins = 0;
+  int player2Wins = 0;
 
   @override
   void initState() {
@@ -69,6 +71,12 @@ class _GameScreenState extends State<GameScreen> {
         // Check if main board is won
         mainWinner = _checkWinner(subGridWinners);
         if (mainWinner != null) {
+          // Increment winner's count
+          if (mainWinner == 'X') {
+            player1Wins++;
+          } else {
+            player2Wins++;
+          }
           // Trigger game over after a short delay
           Future.delayed(const Duration(milliseconds: 1500), () {
             if (mounted) {
@@ -77,6 +85,11 @@ class _GameScreenState extends State<GameScreen> {
                 MaterialPageRoute(
                   builder: (context) => GameOverScreen(
                     winnerName: mainWinner == 'X' ? widget.player1 : widget.player2,
+                    winnerSymbol: mainWinner!,
+                    player1Name: widget.player1,
+                    player2Name: widget.player2,
+                    player1Wins: player1Wins,
+                    player2Wins: player2Wins,
                     onRematch: () {
                       Navigator.pop(context);
                       _resetGame();
@@ -126,72 +139,120 @@ class _GameScreenState extends State<GameScreen> {
               ),
             ),
             child: SafeArea(
-              child: Column(
+              child: Stack(
                 children: [
-                  const SizedBox(height: 20),
-                  // Turn Indicator
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(40),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
-                        )
-                      ],
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: Image.asset(
+                      'assets/galaxy.png',
+                      width: double.infinity,
+                      height: MediaQuery.of(context).size.height * 0.8,
+                      fit: BoxFit.cover,
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    child: Column(
                       children: [
-                        Text(
-                          mainWinner != null 
-                              ? "Player ${mainWinner == 'X' ? widget.player1 : widget.player2} WINS!"
-                              : "Player $currentPlayerName's turn",
-                          style: const TextStyle(
-                            color: Color(0xFF1a0b2e),
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                        const SizedBox(height: 35),
+                        // Turn Indicator
+                        Center(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(28),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.3),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 5),
+                                )
+                              ],
+                            ),
+ 
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  mainWinner != null
+                                      ? "Player ${mainWinner == 'X' ? widget.player1 : widget.player2} WINS!"
+                                      : "Player $currentPlayerName's turn",
+                                  style: const TextStyle(
+                                    fontFamily: 'Brady',
+                                    color: Color(0xFF32316B),
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  (mainWinner ?? currentPlayer) == 'X' ? 'X' : 'O',
+                                  style: TextStyle(
+                                    fontFamily: 'Daydream',
+                                    color: (mainWinner ?? currentPlayer) == 'X'
+                                        ? const Color(0xFFEBA5F6)
+                                        : const Color.fromARGB(255, 178, 148, 255),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        const SizedBox(width: 15),
-                        Icon(
-                          (mainWinner ?? currentPlayer) == 'X' ? Icons.close : Icons.circle_outlined,
-                          color: const Color(0xFFb566ff),
-                          size: 28,
+                        
+                        // Main Board - Constrained for Desktop
+                        Expanded(
+                          child: Center(
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 500),
+                              child: GameBoardWidget(
+                                board: board,
+                                subGridWinners: subGridWinners,
+                                activeSubGrid: activeSubGrid,
+                                onMove: _handleMove,
+                              ),
+                            ),
+                          ),
                         ),
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color(0xFFEBA5F6),
+                                offset: Offset(0, 4),
+                              )
+                            ],
+                          ),
+                          child: ElevatedButton(
+                            onPressed: () => Navigator.pop(context),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFa682ff),
+                              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
+                            child: const Text(
+                              'QUIT MATCH',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontFamily: 'Brady',
+                                fontWeight: FontWeight.w900,
+                                color: Color(0xFF32316B),
+                                letterSpacing: 1,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
                       ],
                     ),
                   ),
-                  const Spacer(),
-                  // Main Board - Constrained for Desktop
-                  Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 500),
-                      child: GameBoardWidget(
-                        board: board,
-                        subGridWinners: subGridWinners,
-                        activeSubGrid: activeSubGrid,
-                        onMove: _handleMove,
-                      ),
-                    ),
-                  ),
-                  const Spacer(),
-                  const SizedBox(height: 20),
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text(
-                      'QUIT MATCH',
-                      style: TextStyle(
-                        color: Colors.white38,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 2,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 40),
                 ],
               ),
             ),

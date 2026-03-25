@@ -18,11 +18,15 @@ class SubGridWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Color? winnerOverlayColor = winner == null
+        ? null
+        : (winner == 'X'
+            ? const Color.fromARGB(255, 190, 41, 158).withOpacity(0.80)
+            : const Color.fromARGB(255, 121, 39, 197).withOpacity(0.80));
+
     return Container(
       decoration: BoxDecoration(
-        color: winner != null
-            ? Colors.grey.withOpacity(0.5)
-            : (isActive ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.3)),
+        color: isActive ? Colors.white.withOpacity(0.22) : Colors.black.withOpacity(0.42),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Stack(
@@ -44,22 +48,39 @@ class SubGridWidget extends StatelessWidget {
                   child: Center(
                     child: cell == null
                         ? null
-                        : Icon(
-                            cell == 'X' ? Icons.close : Icons.circle_outlined,
-                            color: const Color(0xFFb566ff),
-                            size: 14,
+                        : Text(
+                            cell,
+                            style: TextStyle(
+                              fontFamily: 'Daydream',
+                              color: cell == 'X' ? const Color(0xFFEBA5F6) : const Color.fromARGB(255, 189, 118, 255),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w900,
+                            ),
                           ),
                   ),
                 ),
               );
             },
           ),
+          if (winnerOverlayColor != null)
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: winnerOverlayColor,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
           if (winner != null)
             Center(
-              child: Icon(
-                winner == 'X' ? Icons.close : Icons.circle_outlined,
-                color: const Color(0xFFb566ff),
-                size: 60,
+              child: Text(
+                winner!,
+                style: TextStyle(
+                  fontFamily: 'Daydream',
+                  color: winner == 'X' ? const Color(0xFFEBA5F6) : const Color(0xFFb566ff),
+                  fontSize: 40,
+                  fontWeight: FontWeight.w900,
+                ),
               ),
             ),
         ],
